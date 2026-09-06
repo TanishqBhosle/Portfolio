@@ -1,205 +1,69 @@
-import React, { useState } from 'react';
-import { Terminal, ExternalLink, ArrowUpRight } from 'lucide-react';
-import { projects, type Project } from '../data/projects';
-import { GithubIcon } from './Icons';
+import React from 'react';
+import { motion } from 'framer-motion';
+import { projects } from '../data/projects';
 import { ProjectScene } from './ProjectScene';
-import { ProjectModal } from './ProjectModal';
-import { SectionReveal } from './SectionReveal';
-import { MagneticButton } from './MagneticButton';
+import { GithubIcon } from './Icons';
 
 export const Projects: React.FC = () => {
-  const [activeFilter, setActiveFilter] = useState<'all' | 'featured' | 'aiml' | 'fullstack'>('all');
-  const [inspectedProject, setInspectedProject] = useState<Project | null>(null);
-
-  const filterTabs = [
-    { id: 'all', label: `ALL SYSTEMS (${projects.length})` },
-    { id: 'featured', label: `FEATURED ARCHITECTURES (${projects.filter(p => p.featured).length})` },
-    { id: 'aiml', label: 'AI & MACHINE LEARNING' },
-    { id: 'fullstack', label: 'FULL-STACK & DISTRIBUTED' },
-  ];
-
-  const filteredProjects = projects.filter((project) => {
-    if (activeFilter === 'featured') return project.featured;
-    if (activeFilter === 'aiml') {
-      return (
-        project.category === 'AI / System Architecture' ||
-        project.category === 'Machine Learning' ||
-        project.category === 'Autonomous Agents'
-      );
-    }
-    if (activeFilter === 'fullstack') {
-      return (
-        project.category === 'Full-Stack' ||
-        project.category === 'Web3 / Distributed'
-      );
-    }
-    return true;
-  });
-
-  const featuredProjects = filteredProjects.filter((p) => p.featured);
-  const secondaryProjects = filteredProjects.filter((p) => !p.featured);
-
   return (
-    <section id="projects" className="relative py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <section id="projects" className="relative py-24 sm:py-32 overflow-hidden">
       {/* Section Header */}
-      <SectionReveal className="text-center max-w-3xl mx-auto mb-14">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-red-500/30 bg-red-950/20 text-red-400 font-mono text-xs uppercase tracking-widest mb-4">
-          <Terminal className="w-3.5 h-3.5" />
-          <span>PRODUCTION ARCHITECTURES</span>
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 mb-16 sm:mb-24">
+        <div className="w-12 h-[2px] bg-red-500/80 mb-8" />
+        
+        <div className="flex items-center gap-3 text-xs font-mono-code text-neutral-400 tracking-[0.3em] uppercase mb-4">
+          <span>[02] // PRODUCTION ARCHITECTURES</span>
         </div>
-        <h2 className="text-3xl sm:text-5xl font-display font-extrabold text-white uppercase tracking-tight mb-6">
-          Selected <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-amber-500">Systems & Codebases</span>
-        </h2>
-        <p className="text-zinc-400 font-light leading-relaxed text-base sm:text-lg">
-          A showcase of 8 production-engineered applications, autonomous agents, and deep-learning platforms built and maintained with high architectural standards.
-        </p>
-      </SectionReveal>
 
-      {/* Filter Tabs */}
-      <div className="flex flex-wrap items-center justify-center gap-2 mb-16">
-        {filterTabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveFilter(tab.id as any)}
-            className={`px-4 py-2 rounded-xl text-xs font-mono transition-all cursor-pointer ${
-              activeFilter === tab.id
-                ? 'bg-red-600 text-white font-bold shadow-lg shadow-red-950/50'
-                : 'bg-zinc-900/60 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 border border-white/5'
-            }`}
-          >
-            {tab.label}
-          </button>
+        <motion.h2
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="font-display font-black text-4xl sm:text-6xl md:text-7xl text-white uppercase tracking-tight leading-none mb-6"
+        >
+          Selected <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-rose-400 to-amber-400">Systems</span>
+        </motion.h2>
+
+        <p className="font-light text-neutral-400 text-base sm:text-lg max-w-2xl leading-relaxed">
+          Each project is engineered to solve a concrete real-world problem across multimodal safety, distributed supply chains, predictive ensembles, and autonomous agent swarms.
+        </p>
+      </div>
+
+      {/* Cinematic Scene Cascade */}
+      <div className="space-y-0">
+        {projects.map((project, idx) => (
+          <ProjectScene key={project.id} project={project} index={idx} />
         ))}
       </div>
 
-      {/* Primary Featured Projects */}
-      {featuredProjects.length > 0 && (
-        <div className="space-y-12 mb-16">
-          {featuredProjects.map((project, idx) => (
-            <SectionReveal key={project.id} delay={0.1}>
-              <ProjectScene 
-                project={project} 
-                index={idx} 
-                onInspect={(p) => setInspectedProject(p)} 
-              />
-            </SectionReveal>
-          ))}
-        </div>
-      )}
-
-      {/* Secondary Projects Grid */}
-      {secondaryProjects.length > 0 && (
-        <div>
-          <div className="flex items-center gap-3 mb-8">
-            <h3 className="text-sm font-mono uppercase tracking-widest text-zinc-400">
-              // SPECIALIZED PLATFORMS & AGENTS
-            </h3>
-            <div className="flex-1 h-[1px] bg-white/10" />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {secondaryProjects.map((project, idx) => (
-              <SectionReveal key={project.id} delay={0.1 * idx}>
-                <div className="p-8 rounded-3xl bg-zinc-950/60 border border-white/5 hover:border-white/20 transition-all duration-300 flex flex-col justify-between h-full group">
-                  <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="text-[11px] font-mono uppercase tracking-wider text-red-400 bg-red-950/30 px-2.5 py-0.5 rounded-full border border-red-500/20">
-                        {project.category}
-                      </span>
-                      {project.liveUrl && (
-                        <span className="flex items-center gap-1.5 text-[10px] font-mono text-emerald-400">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                          <span>LIVE</span>
-                        </span>
-                      )}
-                    </div>
-
-                    <h4 className="text-2xl font-display font-bold text-white mb-2 group-hover:text-red-400 transition-colors">
-                      {project.title}
-                    </h4>
-                    <p className="text-sm font-light text-zinc-400 leading-relaxed mb-6">
-                      {project.description}
-                    </p>
-
-                    <div className="flex flex-wrap gap-1.5 mb-6">
-                      {project.technologies.slice(0, 5).map((tech, i) => (
-                        <span
-                          key={i}
-                          className="px-2 py-0.5 rounded bg-zinc-900 border border-white/5 text-[10px] font-mono text-zinc-400"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="pt-4 border-t border-white/5 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      {project.liveUrl && (
-                        <a
-                          href={project.liveUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs font-mono text-red-400 hover:text-red-300 flex items-center gap-1"
-                        >
-                          <span>Live App</span>
-                          <ExternalLink className="w-3 h-3" />
-                        </a>
-                      )}
-                      <a
-                        href={project.githubUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs font-mono text-zinc-400 hover:text-zinc-200 flex items-center gap-1"
-                      >
-                        <GithubIcon className="w-3 h-3" />
-                        <span>Source</span>
-                      </a>
-                    </div>
-
-                    <button
-                      onClick={() => setInspectedProject(project)}
-                      className="text-xs font-mono text-zinc-500 hover:text-zinc-300 flex items-center gap-1 cursor-pointer"
-                    >
-                      <span>Inspect</span>
-                      <ArrowUpRight className="w-3 h-3" />
-                    </button>
-                  </div>
-                </div>
-              </SectionReveal>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* GitHub Repository Counter CTA */}
-      <SectionReveal delay={0.2} className="mt-16 text-center">
-        <div className="p-8 rounded-3xl bg-zinc-950/40 border border-white/5 backdrop-blur-md max-w-2xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="text-left">
-            <h4 className="font-display font-bold text-lg text-white">
+      {/* GitHub Repository Counter Outro */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-8 mt-24">
+        <div className="p-8 sm:p-12 rounded-3xl bg-white/[0.015] border border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-6 backdrop-blur-md">
+          <div>
+            <span className="text-xs font-mono-code text-red-400 uppercase tracking-widest block mb-2">
+              OPEN SOURCE REPOSITORIES
+            </span>
+            <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-white uppercase">
               Explore 36+ Open Repositories
-            </h4>
-            <p className="text-xs text-zinc-400 font-light mt-1">
-              Browse experimental scripts, algorithmic solutions, and ongoing AI systems on GitHub.
+            </h3>
+            <p className="text-sm font-light text-neutral-400 mt-2 max-w-xl">
+              From experimental deep learning notebooks to production CI/CD monorepos and algorithmic solutions.
             </p>
           </div>
-          <MagneticButton
+
+          <a
             href="https://github.com/TanishqBhosle"
             target="_blank"
             rel="noopener noreferrer"
-            className="px-5 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white font-mono text-xs font-bold border border-white/10 flex items-center gap-2 shrink-0 shadow-lg"
+            data-cursor="GITHUB"
+            className="px-6 py-3.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 border border-white/10 hover:border-red-500/40 text-white font-mono-code text-xs uppercase tracking-wider flex items-center gap-2.5 transition-all cursor-pointer shrink-0 shadow-lg"
           >
-            <GithubIcon className="w-4 h-4" />
+            <GithubIcon className="w-4 h-4 text-red-400" />
             <span>@TanishqBhosle</span>
-          </MagneticButton>
+          </a>
         </div>
-      </SectionReveal>
-
-      {/* Architecture Deep-Dive Modal */}
-      <ProjectModal 
-        project={inspectedProject} 
-        onClose={() => setInspectedProject(null)} 
-      />
+      </div>
     </section>
   );
 };

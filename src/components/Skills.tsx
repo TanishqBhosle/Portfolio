@@ -1,150 +1,137 @@
-import React, { useState } from 'react';
-import { 
-  Brain, 
-  Cpu, 
-  LineChart, 
-  Sparkles, 
-  Bot, 
-  Search, 
-  Layout, 
-  FileCode, 
-  Palette, 
-  Layers, 
-  Zap, 
-  Server, 
-  Terminal, 
-  Boxes, 
-  Radio, 
-  Shield, 
-  Database, 
-  HardDrive, 
-  GitMerge, 
-  BarChart2, 
-  Container,
-  Code2
-} from 'lucide-react';
+import React from 'react';
+import { motion } from 'framer-motion';
 import { skillCategories } from '../data/skills';
-import { SectionReveal } from './SectionReveal';
-
-const iconMap: Record<string, any> = {
-  Brain, Cpu, LineChart, Sparkles, Bot, Search,
-  Layout, FileCode, Palette, Layers, Zap,
-  Server, Terminal, Boxes, Radio, Shield,
-  Database, HardDrive, GitMerge, BarChart2, Container, Code2
-};
+import { CinematicVideo } from './CinematicVideo';
 
 export const Skills: React.FC = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('ai-ml');
-  const [hoveredSkill, setHoveredSkill] = useState<string | null>(null);
-
-  const activeCategory = skillCategories.find(c => c.id === selectedCategory) || skillCategories[0];
-
   return (
-    <section id="skills" className="relative py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      {/* Section Header */}
-      <SectionReveal className="text-center max-w-3xl mx-auto mb-16">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-red-500/30 bg-red-950/20 text-red-400 font-mono text-xs uppercase tracking-widest mb-4">
-          <Cpu className="w-3.5 h-3.5" />
-          <span>TECHNICAL ARSENAL</span>
-        </div>
-        <h2 className="text-3xl sm:text-5xl font-display font-extrabold text-white uppercase tracking-tight mb-6">
-          Architectural <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-amber-500">Proficiencies</span>
-        </h2>
-        <p className="text-zinc-400 font-light leading-relaxed text-base sm:text-lg">
-          Mastered technologies spanning neural inference, deep learning models, asynchronous API microservices, and modern reactive frontends.
-        </p>
-      </SectionReveal>
-
-      {/* Category Selection Tabs */}
-      <div className="flex flex-wrap items-center justify-center gap-3 mb-12">
-        {skillCategories.map((category) => {
-          const isSelected = selectedCategory === category.id;
-          return (
-            <button
-              key={category.id}
-              onClick={() => setSelectedCategory(category.id)}
-              className={`px-5 py-3 rounded-2xl text-xs font-mono tracking-wider uppercase transition-all cursor-pointer flex items-center gap-2.5 ${
-                isSelected
-                  ? 'bg-red-600 text-white font-bold shadow-lg shadow-red-950/50'
-                  : 'bg-zinc-950/70 hover:bg-zinc-900 text-zinc-400 hover:text-zinc-200 border border-white/5'
-              }`}
-            >
-              <span>{category.title}</span>
-            </button>
-          );
-        })}
+    <section id="skills" className="relative py-28 px-4 sm:px-8 lg:px-16 max-w-7xl mx-auto overflow-hidden">
+      {/* Watermark */}
+      <div className="absolute top-1/2 right-0 -translate-y-1/2 select-none pointer-events-none opacity-[0.02] text-white font-display font-black text-[14rem] sm:text-[22rem] leading-none">
+        STACK
       </div>
 
-      {/* Category Content Box */}
-      <SectionReveal delay={0.2} className="p-8 sm:p-12 rounded-3xl bg-[#0c0c12] border border-white/10 shadow-2xl relative overflow-hidden">
-        {/* Glow corner */}
-        <div className="absolute top-0 right-0 w-80 h-80 bg-red-600/10 rounded-full blur-[120px] pointer-events-none" />
+      {/* Atmospheric Line */}
+      <div className="w-12 h-[2px] bg-red-500/80 mb-8" />
 
-        {/* Category Header */}
-        <div className="mb-10 pb-6 border-b border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h3 className="text-2xl sm:text-3xl font-display font-bold text-white mb-2">
-              {activeCategory.title}
-            </h3>
-            <p className="text-sm font-light text-zinc-400">
-              {activeCategory.description}
-            </p>
+      {/* Section Label */}
+      <div className="flex items-center gap-3 text-xs font-mono-code text-neutral-400 tracking-[0.3em] uppercase mb-4">
+        <span>[03] // TECHNICAL ARSENAL</span>
+      </div>
+
+      {/* Section Heading */}
+      <motion.h2
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        className="font-display font-black text-4xl sm:text-6xl md:text-7xl text-white uppercase tracking-tight leading-none mb-6"
+      >
+        Capabilities & <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-rose-400 to-amber-400">Tooling</span>
+      </motion.h2>
+
+      <p className="font-light text-neutral-400 text-base sm:text-lg max-w-2xl leading-relaxed mb-12">
+        Technologies mastered through production engineering, open-source repositories, and autonomous system research.
+      </p>
+
+      {/* Featured AI Neural Interface Cinematic Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="relative rounded-2xl overflow-hidden border border-red-500/20 bg-gradient-to-br from-red-950/20 via-black/80 to-zinc-950/60 p-6 sm:p-8 mb-16 backdrop-blur-md group"
+      >
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          {/* Video Preview Aspect */}
+          <div className="lg:col-span-7 relative rounded-xl overflow-hidden border border-white/10 shadow-2xl">
+            <CinematicVideo
+              src="/videos/ai-universe.mp4"
+              aspectRatio="16:9"
+              opacity={0.88}
+              className="w-full h-full"
+              badge="NEURAL PIPELINE // 24FPS"
+              showControls={true}
+            />
           </div>
-          <span className="text-xs font-mono text-zinc-500 uppercase tracking-widest shrink-0">
-            {activeCategory.skills.length} SPECIALIZED CAPABILITIES
-          </span>
+
+          {/* Telemetry & Metadata */}
+          <div className="lg:col-span-5 flex flex-col justify-between space-y-4">
+            <div className="flex items-center gap-2 font-mono-code text-[11px] text-red-400 uppercase tracking-widest">
+              <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+              <span>COGNITIVE RUNTIME ENGINE</span>
+            </div>
+
+            <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-white tracking-tight">
+              Multimodal AI & Neural Swarms
+            </h3>
+
+            <p className="text-sm font-light text-neutral-300 leading-relaxed">
+              Orchestrating sub-50ms inference workflows, autonomous multi-agent task swarms with consensus resolution, and production guardrails powered by Gemini 1.5, Groq LPUs, and LangChain.
+            </p>
+
+            <div className="pt-2 flex flex-wrap gap-2 font-mono-code text-[10px] text-neutral-400">
+              <span className="px-2.5 py-1 rounded bg-white/[0.04] border border-white/10">GEMINI 1.5 FLASH</span>
+              <span className="px-2.5 py-1 rounded bg-white/[0.04] border border-white/10">GROQ LPU</span>
+              <span className="px-2.5 py-1 rounded bg-white/[0.04] border border-white/10">LANGCHAIN SWARMS</span>
+              <span className="px-2.5 py-1 rounded bg-white/[0.04] border border-white/10">FASTAPI ASYNC</span>
+            </div>
+          </div>
         </div>
+      </motion.div>
 
-        {/* Skills Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {activeCategory.skills.map((skill, idx) => {
-            const IconComponent = iconMap[skill.iconName] || Code2;
-            const isHovered = hoveredSkill === skill.name;
-
-            return (
-              <div
-                key={idx}
-                onMouseEnter={() => setHoveredSkill(skill.name)}
-                onMouseLeave={() => setHoveredSkill(null)}
-                className={`p-6 rounded-2xl bg-zinc-950/80 border transition-all duration-300 relative group flex flex-col justify-between ${
-                  isHovered 
-                    ? 'border-red-500/50 bg-zinc-900/90 shadow-xl shadow-red-950/20 -translate-y-1' 
-                    : 'border-white/5 hover:border-white/20'
-                }`}
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-zinc-900 border border-white/10 flex items-center justify-center text-red-400 group-hover:scale-110 transition-transform">
-                      <IconComponent className="w-5 h-5" />
-                    </div>
-                    <span 
-                      className={`text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full border ${
-                        skill.level === 'Advanced'
-                          ? 'bg-red-950/40 text-red-400 border-red-500/30'
-                          : 'bg-zinc-900 text-zinc-400 border-white/10'
-                      }`}
-                    >
-                      {skill.level}
-                    </span>
-                  </div>
-
-                  <h4 className="text-base font-display font-bold text-white mb-2 group-hover:text-red-300 transition-colors">
-                    {skill.name}
-                  </h4>
-                  <p className="text-xs font-mono text-zinc-400 leading-relaxed">
-                    {skill.experience}
-                  </p>
-                </div>
-
-                <div className="mt-5 pt-3 border-t border-white/5 flex items-center justify-between text-[10px] font-mono text-zinc-600">
-                  <span>PRODUCTION READY</span>
-                  <span className="text-red-400 group-hover:translate-x-1 transition-transform">→</span>
-                </div>
+      {/* Cascading Categories */}
+      <div className="space-y-16 sm:space-y-24">
+        {skillCategories.map((category, catIdx) => (
+          <motion.div
+            key={category.id}
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-50px' }}
+            transition={{ duration: 0.8, delay: catIdx * 0.1 }}
+            className="border-t border-white/[0.08] pt-10"
+          >
+            {/* Category Header Row */}
+            <div className="flex flex-col md:flex-row md:items-baseline justify-between gap-4 mb-8">
+              <div className="flex items-baseline gap-4">
+                <span className="font-mono-code text-xs text-red-500 font-bold tracking-widest">
+                  0{catIdx + 1}
+                </span>
+                <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-white uppercase tracking-tight">
+                  {category.title}
+                </h3>
               </div>
-            );
-          })}
-        </div>
-      </SectionReveal>
+              <p className="font-light text-neutral-400 text-sm max-w-lg">
+                {category.description}
+              </p>
+            </div>
+
+            {/* Skills Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {category.skills.map((skill, sIdx) => (
+                <div
+                  key={sIdx}
+                  className="p-5 rounded-xl bg-white/[0.015] border border-white/[0.05] hover:border-red-500/40 hover:bg-white/[0.03] transition-all duration-300 flex flex-col justify-between group"
+                >
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-display font-bold text-white text-base group-hover:text-red-300 transition-colors">
+                        {skill.name}
+                      </span>
+                      <span className="font-mono-code text-[10px] text-neutral-400 uppercase tracking-widest px-2 py-0.5 rounded border border-white/[0.08]">
+                        {skill.level}
+                      </span>
+                    </div>
+                    <p className="font-mono-code text-xs text-neutral-400 leading-relaxed">
+                      {skill.experience}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        ))}
+      </div>
     </section>
   );
 };

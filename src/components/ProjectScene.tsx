@@ -1,143 +1,172 @@
-import React from 'react';
-import { ExternalLink, Terminal, ArrowUpRight } from 'lucide-react';
+import React, { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { ExternalLink, Terminal } from 'lucide-react';
 import type { Project } from '../data/projects';
 import { GithubIcon } from './Icons';
-import { MagneticButton } from './MagneticButton';
 
 interface ProjectSceneProps {
   project: Project;
   index: number;
-  onInspect: (project: Project) => void;
 }
 
-export const ProjectScene: React.FC<ProjectSceneProps> = ({ project, index, onInspect }) => {
+export const ProjectScene: React.FC<ProjectSceneProps> = ({ project, index }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start end', 'end start'],
+  });
+
+  // Parallax transforms for cinematic depth
+  const numY = useTransform(scrollYProgress, [0, 1], [-50, 50]);
+  const contentY = useTransform(scrollYProgress, [0, 0.5, 1], [40, 0, -40]);
+  const opacity = useTransform(scrollYProgress, [0, 0.25, 0.75, 1], [0.3, 1, 1, 0.3]);
+
+  const formattedIndex = index < 9 ? `0${index + 1}` : `${index + 1}`;
+
   return (
-    <div className="relative group rounded-3xl bg-[#0d0d12] border border-white/10 hover:border-white/20 transition-all duration-500 overflow-hidden shadow-2xl">
-      {/* Background Ambient Glow */}
-      <div 
-        className="absolute -top-32 -right-32 w-96 h-96 rounded-full blur-[100px] opacity-20 group-hover:opacity-35 transition-opacity duration-700 pointer-events-none"
+    <div
+      ref={containerRef}
+      className="relative min-h-[90vh] flex flex-col justify-center py-20 sm:py-28 border-b border-white/[0.06] last:border-b-0 overflow-hidden"
+    >
+      {/* Giant Background Number Watermark */}
+      <motion.div
+        style={{ y: numY }}
+        className="absolute right-2 sm:right-10 top-1/2 -translate-y-1/2 select-none pointer-events-none font-display font-black text-[12rem] sm:text-[20rem] lg:text-[26rem] leading-none opacity-[0.03] text-white z-0"
+      >
+        {formattedIndex}
+      </motion.div>
+
+      {/* Atmospheric Accent Radial Glow */}
+      <div
+        className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[450px] sm:w-[650px] h-[350px] rounded-full blur-[140px] opacity-15 pointer-events-none z-0"
         style={{ backgroundColor: project.accentColor }}
       />
 
-      <div className="p-8 sm:p-12 flex flex-col justify-between h-full relative z-10">
-        <div>
-          {/* Top metadata bar */}
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-            <div className="flex items-center gap-3">
-              <span className="font-mono text-xs font-bold tracking-widest text-zinc-500">
-                0{index + 1} // ARCHIVE
-              </span>
-              <span 
-                className="px-3 py-1 rounded-full text-[11px] font-mono uppercase tracking-wider border"
-                style={{ 
-                  backgroundColor: `${project.accentColor}15`, 
-                  borderColor: `${project.accentColor}40`,
-                  color: project.accentColor 
-                }}
-              >
-                {project.category}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              {project.liveUrl && (
-                <span className="flex items-center gap-1.5 text-[11px] font-mono text-emerald-400 bg-emerald-950/40 px-2.5 py-1 rounded-full border border-emerald-500/30">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span>PRODUCTION LIVE</span>
-                </span>
-              )}
-            </div>
+      {/* Content Container */}
+      <motion.div
+        style={{ y: contentY, opacity }}
+        className="relative z-10 max-w-6xl w-full mx-auto px-4 sm:px-8"
+      >
+        {/* Top Telemetry Header */}
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <div className="flex items-center gap-3">
+            <span className="font-mono-code text-xs text-red-500 font-bold tracking-[0.25em] uppercase">
+              PROJECT // {formattedIndex}
+            </span>
+            <span className="h-3 w-[1px] bg-white/20" />
+            <span className="font-mono-code text-xs text-neutral-400 uppercase tracking-widest">
+              {project.category}
+            </span>
           </div>
 
-          {/* Project Title & Tagline */}
-          <h3 className="text-3xl sm:text-5xl font-display font-black text-white tracking-tight mb-4 group-hover:text-red-400 transition-colors">
-            {project.title}
-          </h3>
-          <p className="text-base sm:text-lg font-light text-zinc-300 mb-8 leading-relaxed max-w-2xl">
-            {project.description}
-          </p>
+          {project.liveUrl && (
+            <span className="flex items-center gap-2 text-[11px] font-mono-code text-emerald-400 bg-emerald-950/30 px-3 py-1 rounded-full border border-emerald-500/20">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span>LIVE SYSTEM</span>
+            </span>
+          )}
+        </div>
 
-          {/* Terminal-Style Architecture Telemetry Box */}
-          <div className="mb-8 p-5 rounded-2xl bg-black/60 border border-white/5 font-mono text-xs">
-            <div className="flex items-center justify-between pb-3 border-b border-white/5 mb-3 text-zinc-500 text-[11px]">
-              <span className="flex items-center gap-2">
-                <Terminal className="w-3.5 h-3.5 text-zinc-400" />
-                <span>SYS_TELEMETRY</span>
-              </span>
-              <span>STACK_DEPTH: {project.technologies.length} PACKAGES</span>
-            </div>
+        {/* Project Title */}
+        <h3 className="font-display font-black text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-white uppercase tracking-tight leading-[0.95] mb-4">
+          {project.title}
+        </h3>
 
-            {/* Architecture bullets */}
-            <div className="space-y-2 text-zinc-400">
-              {project.architectureHighlights.slice(0, 2).map((item, i) => (
-                <div key={i} className="flex items-start gap-2">
-                  <span className="text-red-400 shrink-0">›</span>
-                  <span className="line-clamp-1">{item}</span>
-                </div>
-              ))}
-            </div>
+        {/* Tagline */}
+        <p className="font-mono-code text-xs sm:text-sm text-neutral-400 uppercase tracking-wider mb-8 max-w-3xl">
+          {project.tagline}
+        </p>
 
-            {/* Metrics row */}
-            {project.metrics && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4 pt-3 border-t border-white/5">
-                {project.metrics.map((m, idx) => (
-                  <div key={idx}>
-                    <div className="text-[10px] text-zinc-500 uppercase">{m.label}</div>
-                    <div className="text-xs font-bold text-white mt-0.5">{m.value}</div>
+        {/* Project Core Description & Architecture */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-10">
+          <div className="lg:col-span-7 space-y-4">
+            <p className="text-neutral-300 font-light text-base sm:text-lg leading-relaxed">
+              {project.longDescription || project.description}
+            </p>
+
+            {/* Architecture Highlights */}
+            {project.architectureHighlights && project.architectureHighlights.length > 0 && (
+              <div className="pt-4 space-y-2">
+                <span className="font-mono-code text-[11px] text-neutral-500 uppercase tracking-widest block mb-2">
+                  Key Architectural Accomplishments
+                </span>
+                {project.architectureHighlights.map((highlight, idx) => (
+                  <div key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-neutral-400">
+                    <span className="text-red-500/90 font-mono-code mt-0.5">›</span>
+                    <span>{highlight}</span>
                   </div>
                 ))}
               </div>
             )}
           </div>
 
-          {/* Technologies Chips */}
-          <div className="flex flex-wrap gap-2 mb-8">
-            {project.technologies.map((tech, idx) => (
-              <span 
-                key={idx}
-                className="px-2.5 py-1 rounded-md bg-zinc-900 border border-white/5 text-[11px] font-mono text-zinc-300"
-              >
-                {tech}
+          {/* Metrics & Telemetry Card */}
+          <div className="lg:col-span-5 flex flex-col justify-between p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06] backdrop-blur-md">
+            <div>
+              <div className="flex items-center gap-2 text-[11px] font-mono-code text-neutral-500 uppercase tracking-wider pb-3 border-b border-white/[0.06] mb-4">
+                <Terminal className="w-3.5 h-3.5 text-red-400" />
+                <span>SPECIFICATIONS & METRICS</span>
+              </div>
+
+              {project.metrics && (
+                <div className="space-y-3 mb-6">
+                  {project.metrics.map((metric, i) => (
+                    <div key={i} className="flex justify-between items-baseline text-xs font-mono-code">
+                      <span className="text-neutral-400">{metric.label}</span>
+                      <span className="text-white font-bold">{metric.value}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Tech Stack Chips */}
+            <div>
+              <span className="font-mono-code text-[10px] text-neutral-500 uppercase tracking-wider block mb-2">
+                TECHNOLOGY STACK
               </span>
-            ))}
+              <div className="flex flex-wrap gap-1.5">
+                {project.technologies.map((tech, i) => (
+                  <span
+                    key={i}
+                    className="px-2.5 py-1 rounded bg-black/40 border border-white/[0.08] text-[11px] font-mono-code text-neutral-300"
+                  >
+                    {tech}
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex flex-wrap items-center justify-between gap-4 pt-6 border-t border-white/10">
-          <div className="flex items-center gap-3">
-            {project.liveUrl && (
-              <MagneticButton
-                href={project.liveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-mono text-xs font-bold flex items-center gap-2 shadow-lg shadow-red-950/50 transition-all"
-              >
-                <span>OPEN SYSTEM</span>
-                <ExternalLink className="w-3.5 h-3.5" />
-              </MagneticButton>
-            )}
-
-            <MagneticButton
-              href={project.githubUrl}
+        {/* Action Links */}
+        <div className="flex flex-wrap items-center gap-4 pt-4">
+          {project.liveUrl && (
+            <a
+              href={project.liveUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-4 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-white/10 text-zinc-200 hover:text-white font-mono text-xs font-medium flex items-center gap-2 transition-all"
+              data-cursor="LIVE"
+              className="px-6 py-3 rounded-xl bg-red-600 hover:bg-red-500 text-white font-mono-code text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-[0_0_25px_rgba(239,68,68,0.35)] transition-all cursor-pointer"
             >
-              <GithubIcon className="w-3.5 h-3.5" />
-              <span>SOURCE</span>
-            </MagneticButton>
-          </div>
+              <span>LAUNCH APP</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          )}
 
-          <button
-            onClick={() => onInspect(project)}
-            className="group/btn text-xs font-mono text-zinc-400 hover:text-red-400 flex items-center gap-1.5 transition-colors cursor-pointer"
+          <a
+            href={project.githubUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-cursor="REPO"
+            className="px-6 py-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.1] hover:border-white/20 text-neutral-200 hover:text-white font-mono-code text-xs uppercase tracking-wider flex items-center gap-2 transition-all cursor-pointer"
           >
-            <span>INSPECT ARCHITECTURE</span>
-            <ArrowUpRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
-          </button>
+            <GithubIcon className="w-4 h-4" />
+            <span>VIEW SOURCE CODE</span>
+          </a>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
