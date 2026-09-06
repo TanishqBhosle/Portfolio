@@ -1,0 +1,105 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-dark: #070709;
+    --bg-card: rgba(18, 18, 24, 0.7);
+    --accent-red: #ef4444;
+    --accent-crimson: #b91c1c;
+    --accent-amber: #f59e0b;
+    --text-primary: #f8fafc;
+    --text-muted: #94a3b8;
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-glow: rgba(239, 68, 68, 0.4);
+  }
+
+  html {
+    background-color: #070709;
+    color: #f8fafc;
+    font-family: 'Inter', system-ui, sans-serif;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: #070709;
+    color: #f8fafc;
+    overflow-x: hidden;
+  }
+
+  /* Custom Cinematic Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #070709;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #27272a;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #ef4444;
+  }
+}
+
+/* Typography styles */
+.font-display {
+  font-family: 'Outfit', sans-serif;
+}
+
+.font-cinematic {
+  font-family: 'Cinzel', serif;
+}
+
+.font-mono-code {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Glassmorphism & Cinematic Glow utilities */
+.glass-panel {
+  background: rgba(14, 14, 18, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.glass-panel-hover {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-panel-hover:hover {
+  background: rgba(24, 24, 32, 0.8);
+  border-color: rgba(239, 68, 68, 0.35);
+  box-shadow: 0 12px 36px -8px rgba(239, 68, 68, 0.15);
+  transform: translateY(-2px);
+}
+
+.text-glow-red {
+  text-shadow: 0 0 24px rgba(239, 68, 68, 0.6), 0 0 48px rgba(239, 68, 68, 0.3);
+}
+
+.text-glow-white {
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+.box-glow-red {
+  box-shadow: 0 0 30px rgba(239, 68, 68, 0.25), inset 0 0 15px rgba(239, 68, 68, 0.15);
+}
+
+/* Vignette overlay */
+.vignette-overlay {
+  background: radial-gradient(circle at 50% 50%, transparent 40%, rgba(7, 7, 9, 0.85) 100%);
+  pointer-events: none;
+}
+
+/* Subtle scanline effect for cinematic terminal vibes */
+.scanlines {
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  );
+  background-size: 100% 4px;
+  pointer-events: none;
+}
