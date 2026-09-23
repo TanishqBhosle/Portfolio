@@ -22,16 +22,3 @@
     padding: 10rem 6rem;
   }
 }
-
-/* Parallax Depth Planes */
-.depth-layer-back {
-  transform: translateZ(-20px) scale(1.1);
-}
-
-.depth-layer-mid {
-  transform: translateZ(0px);
-}
-
-.depth-layer-front {
-  transform: translateZ(20px) scale(0.95);
-}

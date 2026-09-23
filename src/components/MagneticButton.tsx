@@ -54,10 +54,10 @@ export const MagneticButton: React.FC<MagneticButtonProps> = ({
 
   if (href) {
     return (
-      <a 
-        href={href} 
-        target={target} 
-        rel={rel} 
+      <a
+        href={href}
+        target={target}
+        rel={rel}
         download={download}
         className="inline-block text-inherit no-underline"
       >

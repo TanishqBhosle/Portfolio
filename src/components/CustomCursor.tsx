@@ -73,23 +73,23 @@ export const CustomCursor: React.FC = () => {
   if (!isPointer) return null;
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-[9999] overflow-hidden">
+    <div className="fixed inset-0 pointer-events-none z-[9999] overflow-hidden" aria-hidden="true">
       {/* Outer tracking ring */}
       <motion.div
-        className="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 rounded-full border border-red-500/40 bg-red-500/5 backdrop-blur-[1px] flex items-center justify-center pointer-events-none"
+        className="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 rounded-full border border-rose-500/30 bg-rose-500/[0.04] backdrop-blur-[1px] flex items-center justify-center pointer-events-none"
         style={{
           x: smoothX,
           y: smoothY,
           opacity: isVisible ? 1 : 0,
         }}
         animate={{
-          width: cursorText ? 76 : isHovered ? 48 : 28,
-          height: cursorText ? 76 : isHovered ? 48 : 28,
-          borderColor: isHovered ? 'rgba(239, 68, 68, 0.8)' : 'rgba(239, 68, 68, 0.35)',
-          backgroundColor: isHovered ? 'rgba(239, 68, 68, 0.12)' : 'rgba(239, 68, 68, 0.04)',
-          scale: isHovered ? 1.15 : 1,
+          width: cursorText ? 72 : isHovered ? 44 : 26,
+          height: cursorText ? 72 : isHovered ? 44 : 26,
+          borderColor: isHovered ? 'rgba(244, 63, 94, 0.7)' : 'rgba(255, 255, 255, 0.2)',
+          backgroundColor: isHovered ? 'rgba(244, 63, 94, 0.08)' : 'rgba(255, 255, 255, 0.02)',
+          scale: isHovered ? 1.1 : 1,
         }}
-        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+        transition={{ type: 'spring', stiffness: 450, damping: 28 }}
       >
         {cursorText && (
           <span className="text-[10px] font-mono-code font-bold tracking-widest text-white uppercase select-none">
@@ -100,16 +100,16 @@ export const CustomCursor: React.FC = () => {
 
       {/* Center pinpoint */}
       <motion.div
-        className="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 rounded-full bg-red-500 pointer-events-none"
+        className="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 rounded-full bg-rose-500 pointer-events-none"
         style={{
           x: mouseX,
           y: mouseY,
           opacity: isVisible ? 1 : 0,
         }}
         animate={{
-          width: cursorText ? 0 : isHovered ? 6 : 4,
-          height: cursorText ? 0 : isHovered ? 6 : 4,
-          backgroundColor: isHovered ? '#ffffff' : '#ef4444',
+          width: cursorText ? 0 : isHovered ? 5 : 3.5,
+          height: cursorText ? 0 : isHovered ? 5 : 3.5,
+          backgroundColor: isHovered ? '#ffffff' : '#f43f5e',
         }}
         transition={{ duration: 0.15 }}
       />

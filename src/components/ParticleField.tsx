@@ -23,7 +23,7 @@ export const ParticleField: React.FC = () => {
     }
 
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     container.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
@@ -35,20 +35,21 @@ export const ParticleField: React.FC = () => {
     );
     camera.position.z = 800;
 
-    // Adjust particle count based on screen size for optimal performance
+    // Optimized particle count for buttery 60+ fps performance
     const isMobile = window.innerWidth < 768;
-    const particleCount = isMobile ? 400 : 900;
+    const particleCount = isMobile ? 250 : 500;
 
     const geometry = new THREE.BufferGeometry();
     const positions = new Float32Array(particleCount * 3);
     const colors = new Float32Array(particleCount * 3);
 
+    // Warm celestial luxury palette
     const colorPalette = [
-      new THREE.Color(0xef4444), // red accent
-      new THREE.Color(0x991b1b), // dark red
-      new THREE.Color(0xffffff), // star white
-      new THREE.Color(0x71717a), // zinc
-      new THREE.Color(0xf59e0b), // amber
+      new THREE.Color(0xfb7185), // soft rose
+      new THREE.Color(0xf43f5e), // rose accent
+      new THREE.Color(0xffffff), // pure white star
+      new THREE.Color(0xfde68a), // champagne warm gold
+      new THREE.Color(0x94a3b8), // slate neutral
     ];
 
     for (let i = 0; i < particleCount; i++) {
@@ -73,7 +74,7 @@ export const ParticleField: React.FC = () => {
     if (ctx) {
       const gradient = ctx.createRadialGradient(8, 8, 0, 8, 8, 8);
       gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-      gradient.addColorStop(0.4, 'rgba(255, 255, 255, 0.6)');
+      gradient.addColorStop(0.4, 'rgba(255, 255, 255, 0.5)');
       gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
       ctx.fillStyle = gradient;
       ctx.beginPath();
@@ -83,11 +84,11 @@ export const ParticleField: React.FC = () => {
     const texture = new THREE.CanvasTexture(canvas);
 
     const material = new THREE.PointsMaterial({
-      size: isMobile ? 3 : 4,
+      size: isMobile ? 3 : 3.5,
       map: texture,
       vertexColors: true,
       transparent: true,
-      opacity: 0.55,
+      opacity: 0.38,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
     });
@@ -102,8 +103,8 @@ export const ParticleField: React.FC = () => {
     let targetY = 0;
 
     const handleMouseMove = (e: MouseEvent) => {
-      mouseX = (e.clientX - window.innerWidth / 2) * 0.2;
-      mouseY = (e.clientY - window.innerHeight / 2) * 0.2;
+      mouseX = (e.clientX - window.innerWidth / 2) * 0.15;
+      mouseY = (e.clientY - window.innerHeight / 2) * 0.15;
     };
 
     const handleResize = () => {
@@ -122,15 +123,15 @@ export const ParticleField: React.FC = () => {
       animationFrameId = requestAnimationFrame(animate);
       const elapsedTime = clock.getElapsedTime();
 
-      targetX += (mouseX - targetX) * 0.03;
-      targetY += (mouseY - targetY) * 0.03;
+      targetX += (mouseX - targetX) * 0.025;
+      targetY += (mouseY - targetY) * 0.025;
 
-      camera.position.x = targetX * 0.4;
-      camera.position.y = -targetY * 0.4;
+      camera.position.x = targetX * 0.35;
+      camera.position.y = -targetY * 0.35;
       camera.lookAt(scene.position);
 
-      particles.rotation.y = elapsedTime * 0.012;
-      particles.rotation.x = Math.sin(elapsedTime * 0.01) * 0.03;
+      particles.rotation.y = elapsedTime * 0.008;
+      particles.rotation.x = Math.sin(elapsedTime * 0.006) * 0.02;
 
       renderer.render(scene, camera);
     };

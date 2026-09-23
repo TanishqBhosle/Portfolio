@@ -1,5 +1,26 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { ArrowDown, Mail, FileText, Sparkles } from 'lucide-react';
+
+const GithubIcon: React.FC<{ className?: string }> = ({ className = "w-4 h-4" }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+    <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
+  </svg>
+);
+
+const LinkedinIcon: React.FC<{ className?: string }> = ({ className = "w-4 h-4" }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" />
+  </svg>
+);
+
+// Morphing role text
+const roles = [
+  'Full-Stack Developer',
+  'AI / ML Engineer',
+  'System Architect',
+  'Open Source Builder',
+];
 
 interface HeroProps {
   replayKey?: number;
@@ -8,77 +29,60 @@ interface HeroProps {
 export const Hero: React.FC<HeroProps> = ({ replayKey = 0 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [showTitle, setShowTitle] = useState(false);
-  const [progress, setProgress] = useState(0);
+  const [showContent, setShowContent] = useState(false);
+  const [currentRole, setCurrentRole] = useState(0);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ['start start', 'end start'],
   });
 
-  // Parallax transformations as user scrolls down
-  const contentY = useTransform(scrollYProgress, [0, 1], [0, -90]);
-  const videoY = useTransform(scrollYProgress, [0, 1], [0, 80]);
-  const textOpacity = useTransform(scrollYProgress, [0, 0.65], [1, 0]);
-  const textScale = useTransform(scrollYProgress, [0, 1], [1, 0.94]);
-  const glowScale = useTransform(scrollYProgress, [0, 1], [1, 1.3]);
+  // Smooth parallax scrolling effects
+  const contentY = useTransform(scrollYProgress, [0, 1], [0, -70]);
+  const videoY = useTransform(scrollYProgress, [0, 1], [0, 60]);
+  const textOpacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
+  const textScale = useTransform(scrollYProgress, [0, 1], [1, 0.95]);
 
-  // Initial sequence: First 4.5s show ONLY the navbar and video (NO letters above video)
-  // After 4.5s: Reveal "I AM TANISHQ BHOSALE • WELCOME TO MY WORLD"
-  useEffect(() => {
-    // If user has already scrolled down, reveal immediately
-    if (window.scrollY > 40) {
-      setShowTitle(true);
-      setProgress(100);
-      return;
+  const scrollToSection = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
     }
+  };
 
-    setShowTitle(false);
-    setProgress(0);
+  // Morphing role text cycle
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentRole((prev) => (prev + 1) % roles.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
-    // Restart background video if available
+  useEffect(() => {
+    // Show content almost immediately (was 30 seconds — way too long!)
+    setShowContent(false);
+
     if (videoRef.current) {
       videoRef.current.currentTime = 0;
       videoRef.current.play().catch(() => {});
     }
 
-    const duration = 4500; // 4.5 seconds
-    const startTime = Date.now();
+    // Reveal after a brief cinematic pause
+    const timer = setTimeout(() => {
+      setShowContent(true);
+    }, 600);
 
-    const interval = setInterval(() => {
-      const elapsed = Date.now() - startTime;
-      const pct = Math.min(100, Math.round((elapsed / duration) * 100));
-      setProgress(pct);
-
-      if (elapsed >= duration) {
-        setShowTitle(true);
-        clearInterval(interval);
-      }
-    }, 50);
-
-    // If user initiates scroll before 4.5s, reveal title immediately
-    const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setShowTitle(true);
-        clearInterval(interval);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-
-    return () => {
-      clearInterval(interval);
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => clearTimeout(timer);
   }, [replayKey]);
 
   return (
     <section
       ref={containerRef}
       id="hero"
-      className="relative min-h-screen flex flex-col justify-between items-center px-4 sm:px-8 py-16 overflow-hidden select-none"
+      aria-label="Hero Section"
+      className="relative min-h-screen flex flex-col justify-between items-center px-4 sm:px-8 pt-28 pb-16 overflow-hidden select-none"
     >
-      {/* Cinematic Fullscreen Background Video Layer (unobstructed by letters) */}
+      {/* Cinematic Fullscreen Background Video Layer */}
       <motion.div
         style={{ y: videoY }}
         className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none overflow-hidden"
@@ -89,138 +93,198 @@ export const Hero: React.FC<HeroProps> = ({ replayKey = 0 }) => {
           muted
           loop
           playsInline
-          className="w-full h-full object-cover object-center filter brightness-95 contrast-105"
+          aria-hidden="true"
+          className="w-full h-full object-cover object-center filter brightness-[0.7] contrast-105"
         >
           <source src="/videos/hero-reveal.mp4" type="video/mp4" />
           <source src="/videos/intro-reveal.mp4" type="video/mp4" />
         </video>
 
-        {/* Ambient Dark Vignette & Radial Shadow */}
-        <div className="absolute inset-0 bg-radial from-transparent via-[#050507]/45 to-[#050507] pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#050507] via-transparent to-[#050507]/75 pointer-events-none" />
-
-        {/* Fine Scanline Texture */}
-        <div
-          className="absolute inset-0 pointer-events-none opacity-[0.05]"
-          style={{
-            backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px)',
-            backgroundSize: '100% 3px',
-          }}
-        />
+        {/* Ambient Dark Vignette & Atmospheric Gradients */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#07070a]/90 via-[#07070a]/40 to-[#07070a] pointer-events-none" />
+        <div className="absolute inset-0 bg-radial from-transparent via-[#07070a]/50 to-[#07070a] pointer-events-none" />
       </motion.div>
 
-      {/* Red ambient center-stage spotlight */}
-      <motion.div
-        style={{ scale: glowScale }}
-        animate={{
-          opacity: showTitle ? [0.25, 0.45, 0.25] : 0.15,
-        }}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] sm:w-[900px] h-[350px] sm:h-[550px] bg-red-600/25 rounded-full blur-[160px] pointer-events-none"
-      />
+      {/* Warm Ambient Spotlight */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] sm:w-[850px] h-[350px] sm:h-[500px] bg-rose-500/10 rounded-full blur-[160px] pointer-events-none" />
 
-      {/* Subtle bottom progress bar during initial 4.5s countdown */}
-      {!showTitle && (
-        <div className="absolute bottom-0 inset-x-0 h-[2px] bg-white/5 z-20 overflow-hidden pointer-events-none">
+      {/* Main Content Hero Monument */}
+      <AnimatePresence>
+        {showContent && (
           <motion.div
-            className="h-full bg-gradient-to-r from-red-600 to-red-400 shadow-[0_0_8px_rgba(239,68,68,0.8)]"
-            style={{ width: `${progress}%` }}
+            initial={{ opacity: 0, scale: 0.95, y: 25, filter: 'blur(8px)' }}
+            animate={{ opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            style={{ opacity: textOpacity, scale: textScale, y: contentY }}
+            className="relative z-10 flex flex-col items-center justify-center my-auto w-full max-w-5xl mx-auto text-center px-2"
+          >
+            {/* Availability Badge with breathing animation */}
+            <motion.div
+              initial={{ opacity: 0, y: -16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-md mb-6 shadow-sm"
+              style={{ animation: 'breathe 4s ease-in-out infinite' }}
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+              </span>
+              <span className="text-xs sm:text-sm font-medium text-neutral-300 tracking-wide">
+                Available for AI/ML Roles & Research
+              </span>
+              <span className="text-neutral-500 text-xs hidden sm:inline">•</span>
+              <span className="text-neutral-400 text-xs font-mono-code hidden sm:inline">2026</span>
+            </motion.div>
+
+            {/* Primary Name Headline with Shimmer */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.75, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+              className="relative my-2 sm:my-3"
+            >
+              <h1 className="font-display font-black text-5xl sm:text-7xl md:text-8xl lg:text-9xl tracking-tight leading-[1.05] drop-shadow-[0_12px_32px_rgba(0,0,0,0.85)]">
+                <span className="text-shimmer">Tanishq</span>{' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-rose-500 to-red-600">
+                  Bhosale
+                </span>
+              </h1>
+            </motion.div>
+
+            {/* Morphing Role Descriptor */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.65, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-sm sm:text-base md:text-lg font-medium text-neutral-200 mt-2 mb-4 h-8"
+            >
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={currentRole}
+                  initial={{ opacity: 0, y: 10, filter: 'blur(4px)' }}
+                  animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                  exit={{ opacity: 0, y: -10, filter: 'blur(4px)' }}
+                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  className="text-rose-400 font-semibold"
+                >
+                  {roles[currentRole]}
+                </motion.span>
+              </AnimatePresence>
+              <span className="text-neutral-600">•</span>
+              <span className="text-neutral-300">AI / ML Engineer</span>
+              <span className="text-neutral-600 hidden sm:inline">•</span>
+              <span className="text-neutral-400 text-xs sm:text-sm font-mono-code hidden sm:inline">
+                Polaris School of Technology
+              </span>
+            </motion.div>
+
+            {/* Value Proposition Statement / Intro Message */}
+            <motion.p
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.65, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="max-w-3xl text-sm sm:text-base md:text-lg text-neutral-300 font-normal leading-relaxed mb-8 px-4"
+            >
+              Hi, I'm Tanishq a Full-Stack Developer who enjoys turning ideas into clean, interactive, and scalable digital experiences. I love combining frontend, backend, AI, and motion to build products that feel as good as they work.
+            </motion.p>
+
+            {/* Primary & Secondary Call to Actions */}
+            <motion.div
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.65, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mb-8"
+            >
+              <button
+                onClick={() => scrollToSection('projects')}
+                data-cursor="WORK"
+                className="btn-primary cursor-pointer px-6 py-3.5 text-sm sm:text-base font-semibold group relative overflow-hidden"
+              >
+                {/* Animated shine sweep on button */}
+                <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                <span className="relative">Explore Work</span>
+                <ArrowDown className="w-4 h-4 transition-transform group-hover:translate-y-0.5 relative" />
+              </button>
+
+              <button
+                onClick={() => scrollToSection('contact')}
+                data-cursor="CONTACT"
+                className="btn-secondary cursor-pointer px-6 py-3.5 text-sm sm:text-base font-medium group"
+              >
+                <Mail className="w-4 h-4 text-neutral-400 group-hover:text-rose-400 transition-colors" />
+                <span>Get In Touch</span>
+              </button>
+
+              <a
+                href="https://drive.google.com/file/d/15a1JQavD9AOKO9QJm_4z6s3UdsHsboDa/view?usp=sharing"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-cursor="RESUME"
+                className="btn-secondary px-5 py-3.5 text-sm sm:text-base font-medium group"
+              >
+                <FileText className="w-4 h-4 text-neutral-400 group-hover:text-rose-400 transition-colors" />
+                <span>Resume</span>
+              </a>
+            </motion.div>
+
+            {/* Direct Social / Quick Links */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.45 }}
+              className="flex items-center gap-5 text-neutral-400"
+            >
+              <a
+                href="https://github.com/TanishqBhosle"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-cursor="GITHUB"
+                aria-label="GitHub Profile"
+                className="p-2.5 rounded-full border border-white/5 bg-white/[0.03] hover:text-white hover:border-white/20 hover:bg-white/[0.08] transition-all hover:scale-110"
+              >
+                <GithubIcon className="w-4 h-4" />
+              </a>
+              <a
+                href="https://www.linkedin.com/in/tanishqbhosale/"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-cursor="LINKEDIN"
+                aria-label="LinkedIn Profile"
+                className="p-2.5 rounded-full border border-white/5 bg-white/[0.03] hover:text-white hover:border-white/20 hover:bg-white/[0.08] transition-all hover:scale-110"
+              >
+                <LinkedinIcon className="w-4 h-4" />
+              </a>
+              <div className="h-4 w-[1px] bg-white/10" />
+              <div className="flex items-center gap-1.5 text-xs font-mono-code text-neutral-500">
+                <Sparkles className="w-3.5 h-3.5 text-rose-400/80" />
+                <span>React 19 • Three.js • PyTorch</span>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Elegant Minimal Scroll Down Indicator */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.7, duration: 0.8 }}
+        onClick={() => scrollToSection('about')}
+        className="relative z-10 flex flex-col items-center gap-2 cursor-pointer group pt-4"
+      >
+        <div className="w-5 h-8 rounded-full border border-white/20 group-hover:border-rose-400/80 flex items-start justify-center p-1 transition-colors">
+          <motion.div
+            animate={{ y: [0, 10, 0], opacity: [0.3, 1, 0.3] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+            className="w-1 h-1.5 rounded-full bg-rose-400"
           />
         </div>
-      )}
-
-      {/* Spacer pushing content to vertical center below navbar */}
-      <div className="h-16 sm:h-20 w-full" />
-
-      {/* Monumental Composition: Appears AFTER 4.5s (clean video before that) */}
-      <div className="relative z-10 flex flex-col items-center justify-center my-auto w-full max-w-6xl mx-auto">
-        <AnimatePresence>
-          {showTitle && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.92, y: 30, filter: 'blur(12px)' }}
-              animate={{ opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
-              style={{ opacity: textOpacity, scale: textScale, y: contentY }}
-              className="flex flex-col items-center text-center w-full px-2"
-            >
-              {/* Pure Typography Monument (NO box, NO background card, 100% synced with video) */}
-              <div className="relative flex flex-col items-center justify-center w-full select-none">
-                {/* Top header: ••• WELCOME TO MY WORLD ••• */}
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.1 }}
-                  className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm md:text-base font-mono-code font-semibold tracking-[0.4em] text-neutral-200 uppercase mb-2 sm:mb-4 drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]"
-                >
-                  <span className="text-red-500 font-bold">•••</span>
-                  <span>WELCOME TO MY WORLD</span>
-                  <span className="text-red-500 font-bold">•••</span>
-                </motion.div>
-
-                {/* Monumental Letters: I AM TANISHQ (smaller, clean, without badges) */}
-                <div className="relative flex items-center justify-center my-2 sm:my-3">
-                  <h1
-                    style={{ fontFamily: "'Bebas Neue', 'Anton', sans-serif" }}
-                    className="font-black text-4xl sm:text-6xl md:text-7xl lg:text-8xl leading-tight tracking-wider uppercase text-transparent bg-clip-text bg-gradient-to-b from-red-500 via-red-600 to-red-800 drop-shadow-[0_8px_24px_rgba(0,0,0,0.95)] drop-shadow-[0_0_40px_rgba(220,38,38,0.5)] px-4 text-center"
-                  >
-                    I AM TANISHQ
-                  </h1>
-                </div>
-
-                {/* Subtitle & Role Identifier (NO repeated TANISHQ) */}
-                <motion.div
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4, duration: 0.7 }}
-                  className="mt-6 sm:mt-8 flex flex-col items-center gap-1.5"
-                >
-                  <p className="font-mono-code text-xs sm:text-sm md:text-base text-neutral-300 uppercase tracking-[0.35em] font-medium drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
-                    FULL-STACK × AI/ML DEVELOPER
-                  </p>
-                  <p className="text-[10px] sm:text-xs font-mono-code text-neutral-400 tracking-[0.25em] uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
-                    POLARIS SCHOOL OF TECHNOLOGY • B.TECH CS (AI/ML)
-                  </p>
-                </motion.div>
-              </div>
-
-              {/* Cinematic Scroll Prompt */}
-              <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5, duration: 0.7 }}
-                className="mt-6 sm:mt-8 flex flex-col items-center gap-2 cursor-pointer group"
-                onClick={() => {
-                  const about = document.getElementById('about');
-                  if (about) about.scrollIntoView({ behavior: 'smooth' });
-                }}
-              >
-                <motion.div
-                  animate={{ y: [0, 6, 0] }}
-                  transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-                  className="w-5 h-8 rounded-full border border-red-500/60 group-hover:border-red-400 flex items-start justify-center p-1 shadow-[0_0_12px_rgba(239,68,68,0.3)] transition-colors"
-                >
-                  <motion.div
-                    animate={{ y: [0, 10, 0], opacity: [0.3, 1, 0.3] }}
-                    transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-                    className="w-1 h-1.5 rounded-full bg-red-500"
-                  />
-                </motion.div>
-                <span className="text-[10px] font-mono-code text-neutral-400 group-hover:text-white tracking-[0.3em] uppercase transition-colors">
-                  SCROLL TO EXPLORE
-                </span>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-
-      {/* Bottom padding anchor */}
-      <div className="h-8 w-full" />
+        <span className="text-[10px] font-mono-code text-neutral-400 group-hover:text-white tracking-[0.25em] uppercase transition-colors">
+          SCROLL
+        </span>
+      </motion.div>
     </section>
   );
 };

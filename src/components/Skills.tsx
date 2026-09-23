@@ -1,136 +1,242 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useRef } from 'react';
+import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { skillCategories } from '../data/skills';
-import { CinematicVideo } from './CinematicVideo';
+import { TiltCard } from './TiltCard';
+import { 
+  Code2, 
+  Layout, 
+  Server, 
+  Database, 
+  Cpu, 
+  Wrench, 
+  GraduationCap, 
+  Sparkles, 
+  CheckCircle2, 
+  BookOpen 
+} from 'lucide-react';
+
+const categoryIcons: Record<string, React.ElementType> = {
+  'languages': Code2,
+  'frontend': Layout,
+  'backend': Server,
+  'databases': Database,
+  'ai-ml': Cpu,
+  'tools': Wrench,
+  'learning': GraduationCap,
+};
+
+const levelToPercent: Record<string, number> = {
+  'Advanced': 92,
+  'Proficient': 75,
+  'Learning': 58,
+};
+
+const levelToColor: Record<string, string> = {
+  'Advanced': 'from-rose-500 to-rose-400',
+  'Proficient': 'from-amber-500 to-amber-400',
+  'Learning': 'from-cyan-500 to-cyan-400',
+};
+
+const levelBadgeStyles: Record<string, string> = {
+  'Advanced': 'text-rose-400/90 bg-rose-500/10 border-rose-500/20',
+  'Proficient': 'text-amber-400/90 bg-amber-500/10 border-amber-500/20',
+  'Learning': 'text-cyan-400/90 bg-cyan-500/10 border-cyan-500/20',
+};
+
+// Animated proficiency bar
+const ProficiencyBar: React.FC<{ level: string }> = ({ level }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: '-30px' });
+  const percent = levelToPercent[level] || 60;
+  const gradient = levelToColor[level] || 'from-rose-500 to-rose-400';
+
+  return (
+    <div ref={ref} className="proficiency-bar mt-3">
+      <motion.div
+        initial={{ width: 0 }}
+        animate={isInView ? { width: `${percent}%` } : { width: 0 }}
+        transition={{ duration: 1.1, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+        className={`proficiency-bar-fill bg-gradient-to-r ${gradient}`}
+      />
+    </div>
+  );
+};
 
 export const Skills: React.FC = () => {
+  const [activeCategory, setActiveCategory] = useState<string>('all');
+
+  const displayedCategories = activeCategory === 'all'
+    ? skillCategories
+    : skillCategories.filter((c) => c.id === activeCategory);
+
   return (
-    <section id="skills" className="relative py-28 px-4 sm:px-8 lg:px-16 max-w-7xl mx-auto overflow-hidden">
-      {/* Watermark */}
-      <div className="absolute top-1/2 right-0 -translate-y-1/2 select-none pointer-events-none opacity-[0.02] text-white font-display font-black text-[14rem] sm:text-[22rem] leading-none">
+    <section id="skills" aria-label="Technical Skills" className="relative py-24 sm:py-32 px-4 sm:px-8 lg:px-16 max-w-7xl mx-auto overflow-hidden">
+      {/* Background Watermark */}
+      <div
+        className="absolute top-1/2 right-0 -translate-y-1/2 select-none pointer-events-none opacity-[0.02] text-white font-display font-black text-[12rem] sm:text-[18rem] leading-none"
+        aria-hidden="true"
+      >
         STACK
       </div>
 
       {/* Atmospheric Line */}
-      <div className="w-12 h-[2px] bg-red-500/80 mb-8" />
+      <div className="w-12 h-[2px] bg-rose-500 mb-6" />
 
       {/* Section Label */}
-      <div className="flex items-center gap-3 text-xs font-mono-code text-neutral-400 tracking-[0.3em] uppercase mb-4">
-        <span>[03] // TECHNICAL ARSENAL</span>
+      <div className="flex items-center gap-2 text-xs font-mono-code text-rose-400 tracking-widest uppercase mb-4">
+        <Sparkles className="w-3.5 h-3.5" />
+        <span>TECHNICAL CAPABILITIES</span>
       </div>
 
       {/* Section Heading */}
       <motion.h2
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="font-display font-black text-4xl sm:text-6xl md:text-7xl text-white uppercase tracking-tight leading-none mb-6"
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        className="font-display font-black text-3xl sm:text-5xl md:text-6xl text-white tracking-tight leading-tight mb-4"
       >
-        Capabilities & <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-rose-400 to-amber-400">Tooling</span>
+        Core Technical{' '}
+        <span className="text-gradient-animated">
+          Proficiencies
+        </span>
       </motion.h2>
 
-      <p className="font-light text-neutral-400 text-base sm:text-lg max-w-2xl leading-relaxed mb-12">
-        Technologies mastered through production engineering, open-source repositories, and autonomous system research.
+      <p className="text-neutral-400 text-sm sm:text-base md:text-lg max-w-2xl leading-relaxed mb-10">
+        Technologies, architectures, and foundational disciplines across production engineering, server systems, and continuous exploration.
       </p>
 
-      {/* Featured AI Neural Interface Cinematic Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
-        className="relative rounded-2xl overflow-hidden border border-red-500/20 bg-gradient-to-br from-red-950/20 via-black/80 to-zinc-950/60 p-6 sm:p-8 mb-16 backdrop-blur-md group"
-      >
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          {/* Video Preview Aspect */}
-          <div className="lg:col-span-7 relative rounded-xl overflow-hidden border border-white/10 shadow-2xl">
-            <CinematicVideo
-              src="/videos/ai-universe.mp4"
-              aspectRatio="16:9"
-              opacity={0.88}
-              className="w-full h-full"
-              badge="NEURAL PIPELINE // 24FPS"
-              showControls={true}
-            />
-          </div>
+      {/* Interactive Category Tabs */}
+      <div className="flex flex-wrap items-center gap-2 mb-12 border-b border-white/[0.08] pb-6">
+        <button
+          onClick={() => setActiveCategory('all')}
+          className={`px-4 py-2 rounded-full text-xs font-medium transition-all cursor-pointer ${activeCategory === 'all'
+              ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40 shadow-sm shadow-rose-500/10'
+              : 'bg-white/[0.03] text-neutral-400 hover:text-white border border-white/[0.06] hover:bg-white/[0.06]'
+            }`}
+        >
+          All Domains
+        </button>
 
-          {/* Telemetry & Metadata */}
-          <div className="lg:col-span-5 flex flex-col justify-between space-y-4">
-            <div className="flex items-center gap-2 font-mono-code text-[11px] text-red-400 uppercase tracking-widest">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-              <span>COGNITIVE RUNTIME ENGINE</span>
-            </div>
+        {skillCategories.map((category) => {
+          const Icon = categoryIcons[category.id] || Sparkles;
+          const isActive = activeCategory === category.id;
+          const isLearning = category.id === 'learning';
+          return (
+            <button
+              key={category.id}
+              onClick={() => setActiveCategory(category.id)}
+              className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium transition-all cursor-pointer ${
+                isActive
+                  ? isLearning
+                    ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm shadow-cyan-500/10'
+                    : 'bg-rose-500/20 text-rose-300 border border-rose-500/40 shadow-sm shadow-rose-500/10'
+                  : 'bg-white/[0.03] text-neutral-400 hover:text-white border border-white/[0.06] hover:bg-white/[0.06]'
+              }`}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              <span>{category.title}</span>
+            </button>
+          );
+        })}
+      </div>
 
-            <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-white tracking-tight">
-              Multimodal AI & Neural Swarms
-            </h3>
-
-            <p className="text-sm font-light text-neutral-300 leading-relaxed">
-              Orchestrating sub-50ms inference workflows, autonomous multi-agent task swarms with consensus resolution, and production guardrails powered by Gemini 1.5, Groq LPUs, and LangChain.
-            </p>
-
-            <div className="pt-2 flex flex-wrap gap-2 font-mono-code text-[10px] text-neutral-400">
-              <span className="px-2.5 py-1 rounded bg-white/[0.04] border border-white/10">GEMINI 1.5 FLASH</span>
-              <span className="px-2.5 py-1 rounded bg-white/[0.04] border border-white/10">GROQ LPU</span>
-              <span className="px-2.5 py-1 rounded bg-white/[0.04] border border-white/10">LANGCHAIN SWARMS</span>
-              <span className="px-2.5 py-1 rounded bg-white/[0.04] border border-white/10">FASTAPI ASYNC</span>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Cascading Categories */}
-      <div className="space-y-16 sm:space-y-24">
-        {skillCategories.map((category, catIdx) => (
-          <motion.div
-            key={category.id}
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-50px' }}
-            transition={{ duration: 0.8, delay: catIdx * 0.1 }}
-            className="border-t border-white/[0.08] pt-10"
-          >
-            {/* Category Header Row */}
-            <div className="flex flex-col md:flex-row md:items-baseline justify-between gap-4 mb-8">
-              <div className="flex items-baseline gap-4">
-                <span className="font-mono-code text-xs text-red-500 font-bold tracking-widest">
-                  0{catIdx + 1}
-                </span>
-                <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-white uppercase tracking-tight">
-                  {category.title}
-                </h3>
-              </div>
-              <p className="font-light text-neutral-400 text-sm max-w-lg">
-                {category.description}
-              </p>
-            </div>
-
-            {/* Skills Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {category.skills.map((skill, sIdx) => (
-                <div
-                  key={sIdx}
-                  className="p-5 rounded-xl bg-white/[0.015] border border-white/[0.05] hover:border-red-500/40 hover:bg-white/[0.03] transition-all duration-300 flex flex-col justify-between group"
-                >
-                  <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="font-display font-bold text-white text-base group-hover:text-red-300 transition-colors">
-                        {skill.name}
-                      </span>
-                      <span className="font-mono-code text-[10px] text-neutral-400 uppercase tracking-widest px-2 py-0.5 rounded border border-white/[0.08]">
-                        {skill.level}
-                      </span>
+      {/* Skills Categories Display */}
+      <div className="space-y-12 sm:space-y-16">
+        <AnimatePresence mode="popLayout">
+          {displayedCategories.map((category, catIdx) => {
+            const Icon = categoryIcons[category.id] || Sparkles;
+            const isLearningCategory = category.id === 'learning';
+            return (
+              <motion.div
+                key={category.id}
+                layout
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.98 }}
+                transition={{ duration: 0.5, delay: catIdx * 0.04 }}
+                className="pt-4"
+              >
+                {/* Category Header */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 pb-3 border-b border-white/[0.06]">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2 rounded-lg border ${
+                      isLearningCategory
+                        ? 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400'
+                        : 'bg-rose-500/10 border-rose-500/20 text-rose-400'
+                    }`}>
+                      <Icon className="w-4 h-4" />
                     </div>
-                    <p className="font-mono-code text-xs text-neutral-400 leading-relaxed">
-                      {skill.experience}
-                    </p>
+                    <h3 className="font-display font-bold text-xl sm:text-2xl text-white">
+                      {category.title}
+                    </h3>
                   </div>
+                  <p className="text-xs sm:text-sm text-neutral-400 max-w-md">
+                    {category.description}
+                  </p>
                 </div>
-              ))}
-            </div>
-          </motion.div>
-        ))}
+
+                {/* Skills Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {category.skills.map((skill, sIdx) => {
+                    const isLearning = skill.level === 'Learning';
+                    const glowColor = isLearning ? 'rgba(6, 182, 212, 0.15)' : 'rgba(244, 63, 94, 0.15)';
+                    const badgeStyle = levelBadgeStyles[skill.level] || 'text-rose-400/90 bg-rose-500/10 border-rose-500/20';
+
+                    return (
+                      <motion.div
+                        key={sIdx}
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.35, delay: sIdx * 0.04 }}
+                      >
+                        <TiltCard 
+                          className="rounded-xl h-full" 
+                          tiltIntensity={6}
+                          glowColor={glowColor}
+                        >
+                          <div className="p-4 sm:p-5 rounded-xl cinematic-card-premium h-full flex flex-col justify-between group">
+                            <div className="relative z-10">
+                              <div className="flex items-start justify-between gap-2 mb-2">
+                                <span className="font-display font-bold text-sm sm:text-base text-white group-hover:text-rose-300 transition-colors">
+                                  {skill.name}
+                                </span>
+                                <span className={`shrink-0 text-[10px] font-mono-code px-2 py-0.5 rounded border ${badgeStyle}`}>
+                                  {skill.level}
+                                </span>
+                              </div>
+
+                              <p className="text-xs text-neutral-400 leading-relaxed font-normal">
+                                {skill.experience}
+                              </p>
+
+                              {/* Animated proficiency bar */}
+                              <ProficiencyBar level={skill.level} />
+                            </div>
+
+                            <div className="relative z-10 mt-4 pt-2 border-t border-white/[0.04] flex items-center gap-1.5 text-[11px] font-mono-code">
+                              {isLearning ? (
+                                <>
+                                  <BookOpen className="w-3 h-3 text-cyan-400/80" />
+                                  <span className="text-cyan-400/80">In active focus</span>
+                                </>
+                              ) : (
+                                <>
+                                  <CheckCircle2 className="w-3 h-3 text-rose-400/80" />
+                                  <span className="text-neutral-400">Production verified</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        </TiltCard>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
       </div>
     </section>
   );
