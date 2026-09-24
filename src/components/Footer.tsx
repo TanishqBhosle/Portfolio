@@ -17,7 +17,7 @@ export const Footer: React.FC = () => {
           </div>
           <div>
             <span className="font-display font-bold text-sm text-neutral-200 block">
-              Tanishq Bhosle
+              Tanishq Bhosale
             </span>
             <span className="font-mono-code text-[11px] text-neutral-400">
               AI/ML Engineer & Full-Stack Architect
@@ -33,7 +33,7 @@ export const Footer: React.FC = () => {
             <span>using React 19, Three.js & Tailwind CSS</span>
           </div>
           <div className="text-neutral-500 text-[10px]">
-            © {new Date().getFullYear()} Tanishq Bhosle. All rights reserved.
+            © {new Date().getFullYear()} Tanishq Bhosale. All rights reserved.
           </div>
         </div>
 

@@ -68,7 +68,7 @@ export const IntroSequence: React.FC<IntroSequenceProps> = ({ onComplete }) => {
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
               className="font-display font-bold text-3xl sm:text-5xl md:text-6xl text-white tracking-[0.15em] uppercase"
             >
-              Tanishq Bhosle
+              Tanishq Bhosale
             </motion.h1>
 
             <motion.p

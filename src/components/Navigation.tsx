@@ -76,7 +76,7 @@ export const Navigation: React.FC<NavigationProps> = ({ onOpen3D }) => {
           </div>
           <div className="flex flex-col text-left">
             <span className="text-sm font-display font-bold tracking-tight text-neutral-200 group-hover:text-white transition-colors">
-              Tanishq Bhosle
+              Tanishq Bhosale
             </span>
           </div>
         </a>
